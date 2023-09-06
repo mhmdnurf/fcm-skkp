@@ -16,7 +16,7 @@ admin.initializeApp({
 
 app.get("/test"),
   async (req, res) => {
-    console.log(halo);
+    console.log("halo");
     res.status(200).json({ message: "Test sent successfully" });
   };
 
