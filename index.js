@@ -14,12 +14,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-app.get("/test"),
-  async (req, res) => {
-    console.log("halo");
-    res.status(200).json({ message: "Test sent successfully" });
-  };
-
 app.post("/send-notification/pengajuanTutup", async (req, res) => {
   try {
     const usersCollectionRef = admin.firestore().collection("users");
@@ -646,6 +640,35 @@ app.post(
     }
   }
 );
+
+app.post("/send-notification/pengumuman", async (req, res) => {
+  try {
+    const { title, body } = req.body;
+    const usersCollectionRef = admin.firestore().collection("users");
+    const usersSnapshot = await usersCollectionRef
+      .where("registrationToken", "!=", null)
+      .get();
+
+    const registrationTokens = usersSnapshot.docs.map(
+      (doc) => doc.data().registrationToken
+    );
+
+    const messages = registrationTokens.map((registrationToken) => ({
+      notification: {
+        title: title,
+        body: body,
+      },
+      token: registrationToken,
+    }));
+
+    const response = await admin.messaging().sendAll(messages);
+    console.log("Successfully sent notifications:", response);
+    res.status(200).json({ message: "Notifications sent successfully" });
+  } catch (error) {
+    console.error("Error sending notifications:", error);
+    res.status(500).json({ error: "Failed to send notifications" });
+  }
+});
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
