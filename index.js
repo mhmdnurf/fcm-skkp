@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const admin = require("firebase-admin");
-const serviceAccount = require("./firebase.json"); // Ganti dengan path yang sesuai
+const serviceAccount = require("./firebase.json");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -96,6 +96,7 @@ app.post("/send-notification/pengajuanKP", async (req, res) => {
     res.status(500).json({ error: "Failed to send notifications" });
   }
 });
+
 app.post("/send-notification/pengajuan", async (req, res) => {
   try {
     const usersCollectionRef = admin.firestore().collection("users");
